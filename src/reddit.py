@@ -8,6 +8,31 @@ from dataclasses import dataclass
 
 logger = logging.getLogger()
 
+IMAGES = [
+            "ai",
+            "arw",
+            "bmp",
+            "dip",
+            "eps",
+            "gif",
+            "heic",
+            "heif",
+            "jfi",
+            "jfif",
+            "jif",
+            "jpe",
+            "jpeg",
+            "jpg",
+            "nrw",
+            "png",
+            "raw",
+            "svg",
+            "svgz",
+            "tif",
+            "tiff",
+            "webp"
+            ]
+
 class RedditAuthError(Exception):
     pass
 class RedditResponseError(Exception):
@@ -72,12 +97,16 @@ class Reddit:
                 }
 
         headers = {"User-Agent": "TopToTumblr/0.1 by GreedyLeek"}
-        response = requests.post(
-                url="https://www.reddit.com/api/v1/access_token",
-                auth=client_auth,
-                data=user_data,
-                headers=headers
-                )
+        try:
+            response = requests.post(
+                    url="https://www.reddit.com/api/v1/access_token",
+                    auth=client_auth,
+                    data=user_data,
+                    headers=headers
+                    )
+        except Exception as e:
+            logger.error(f"Failed to get a Reddit token with error: {e}")
+            raise RedditAuthError
 
         if response.status_code != 200:
             logger.error(f"Failed to authenticate with code: {response.status_code}")
@@ -121,9 +150,14 @@ class Reddit:
                         permalink=f"https://reddit.com{post_dict['data']['children'][0]['data']['permalink']}",
                         author_name=post_dict["data"]["children"][0]["data"]["author"],
                         author_url=f"https://reddit.com/u/{post_dict['data']['children'][0]['data']['author']}")
+
+                # Validate the URL is an image.
+                if not post_details.url.split(".")[-1].lower() in IMAGES:
+                    logger.error(f"Top post's target URL has file format of: {post_details.url.split('.')[-1].lower()}")
+                    raise RedditResponseError
                 return post_details
             except Exception as e:
-                logger.error(f"Failed to get the URL of the top post with error: {e}")
+                logger.error(f"Failed to get the details of the top post with error: {e}")
                 raise RedditResponseError
         else:
             logger.error(f"Received response error: {top_post.status_code}")

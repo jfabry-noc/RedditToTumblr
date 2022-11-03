@@ -129,5 +129,5 @@ dmypy.json
 .pyre/
 
 # My stuff.
-tester.py
-
+*tester.py
+tests/
