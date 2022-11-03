@@ -74,7 +74,7 @@ def main():
 
 if __name__ == "__main__":
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
     log_format = logging.Formatter('%(asctime)s - [%(filename)s] - %(levelname)s - %(message)s')
     file_handler = RotatingFileHandler(
             "/tmp/toptotumblr.log",
