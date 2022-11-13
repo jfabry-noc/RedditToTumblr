@@ -60,7 +60,7 @@ class Tumblr:
             if image_response.status_code == 201:
                 try:
                     logger.info(f"Posted successfully with message: {image_response.json()['response']['display_text']}")
-                    break
+                    return
                 except Exception as e:
                     logger.error(f"Image posted successfully, but failed to process response with error: {e}")
                     continue
