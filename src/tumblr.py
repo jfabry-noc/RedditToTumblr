@@ -36,9 +36,6 @@ class Tumblr:
             og_link (str): Link to the original post on Reddit.
             title (str): Title from the original Reddit post.
             author_name (str): Name of the original post's author on Reddit.
-
-        Returns:
-            bool: Indicates if the post was successful.
         """
         image_params = {
             "state": "published",
@@ -63,6 +60,7 @@ class Tumblr:
             if image_response.status_code == 201:
                 try:
                     logger.info(f"Posted successfully with message: {image_response.json()['response']['display_text']}")
+                    break
                 except Exception as e:
                     logger.error(f"Image posted successfully, but failed to process response with error: {e}")
                     continue
