@@ -46,22 +46,31 @@ class Tumblr:
             "source": image_url,
             "caption": f"{title}, from <a href=\"{og_link}\">/u/{author_name}</a>."
             }
-        try:
-            image_response = requests.post(
-                url=f"https://api.tumblr.com/v2/blog/{self.instance}/post",
-                auth=self.oauth_package,
-                data=image_params
-                )
-        except Exception as e:
-            logger.error(f"Failed to make the post with error: {e}")
-            raise TumblrError
-
-        if image_response.status_code == 201:
+        retry_counter = 3
+        attempts = 0
+        while attempts < retry_counter:
+            attempts += 1
             try:
-                logger.info(f"Posted successfully with message: {image_response.json()['response']['display_text']}")
+                image_response = requests.post(
+                    url=f"https://api.tumblr.com/v2/blog/{self.instance}/post",
+                    auth=self.oauth_package,
+                    data=image_params
+                    )
             except Exception as e:
-                logger.error(f"Image posted successfully, but failed to process response with error: {e}")
-                raise TumblrError
-        else:
-            logger.error(f"Image not posted successfully. Response code was: {image_response.status_code}")
+                logger.error(f"Failed to make the post with error: {e}")
+                continue
+
+            if image_response.status_code == 201:
+                try:
+                    logger.info(f"Posted successfully with message: {image_response.json()['response']['display_text']}")
+                except Exception as e:
+                    logger.error(f"Image posted successfully, but failed to process response with error: {e}")
+                    continue
+            else:
+                logger.error(f"Image not posted successfully. Response code was: {image_response.status_code}")
+                continue
+
+        # There's a problem if we made it this far without success.
+        logger.error("Unable to post to Tumblr.")
+        raise TumblrError
 
