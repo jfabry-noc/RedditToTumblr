@@ -27,7 +27,7 @@ class Tumblr:
             resource_owner_key=oauth_key,
             resource_owner_secret=oauth_secret)
 
-    def new_photo(self, image_url: str, og_link: str, title: str, author_name: str) -> None:
+    def new_photo(self, image_url: str, og_link: str, title: str, author_name: str, tags: str = "") -> None:
         """
         Creates a new photo post.
 
@@ -36,6 +36,7 @@ class Tumblr:
             og_link (str): Link to the original post on Reddit.
             title (str): Title from the original Reddit post.
             author_name (str): Name of the original post's author on Reddit.
+            tags (str): Tags to include with the post.
         """
         image_params = {
             "state": "published",
@@ -43,6 +44,8 @@ class Tumblr:
             "source": image_url,
             "caption": f"{title}, from <a href=\"{og_link}\">/u/{author_name}</a>."
             }
+        if tags:
+            image_params["tags"] = tags
         retry_counter = 3
         attempts = 0
         while attempts < retry_counter:
