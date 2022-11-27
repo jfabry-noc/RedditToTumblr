@@ -36,7 +36,7 @@ def main():
     tumblr_oauth_token = os.environ.get("tumblr_oauth_token")
     tumblr_oauth_secret = os.environ.get("tumblr_oauth_secret")
     tumblr_instance = os.environ.get("tumblr_blog")
-    tumblr_tags = os.environ.get("tags", "")
+    tumblr_tags = os.environ.get("tumblr_tags", "")
 
     # Validate everything is in place for Tumblr.
     if not tumblr_key or not tumblr_secret or not tumblr_oauth_token or not tumblr_oauth_secret or not tumblr_instance:
